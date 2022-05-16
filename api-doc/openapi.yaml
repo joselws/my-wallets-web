@@ -1,0 +1,187 @@
+openapi: 3.0.0
+info:
+  version: 0.1.0
+  title: My Wallets API
+  description: API used for the web app My Wallets
+  license:
+    name: MIT
+
+servers:
+  - url: 'http://127.0.0.1:8000/api'
+
+paths:
+
+  /login:
+    post:
+      description: Users send their credentials to log in
+      summary: Log in the user
+      tags:
+        - login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: user123
+                password:
+                  type: string
+                  example: pass123
+      responses:
+        '200':
+          description: User logged in successfully
+          
+        '400':
+          description: There was a problem with user's credentials
+
+  /register:
+    post:
+      description: Create an account for new users
+      summary: Register a new user
+      tags:
+        - register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+                - validation
+              properties:
+                username:
+                  type: string
+                  example: user123
+                email:
+                  type: string
+                  example: user123@gmail.com
+                password:
+                  type: string
+                  example: pass123
+                validation:
+                  type: string
+                  description: Ensure that the 2 passwords are identical
+                  example: pass123
+      responses:
+        '200':
+          description: User successfully registered to the site
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                properties:
+                  id:
+                    type: integer
+                    description: id of the new user
+                    example: 5
+        '400':
+          description: There was a problem with user's registration
+
+  /wallet:
+    get:
+      description: Retrieve all account data and wallets from the user
+      summary: Get all user's wallet data
+      tags:
+        - wallet
+      responses:
+        '200':
+          description: All user data successfully retrieved from server
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - wallets
+                properties:
+                  wallets:
+                    type: array
+                    minItems: 0
+                    items:
+                      $ref: "#/components/schemas/Wallet"
+
+        '401':
+          description: Unauthorized. Need aditional permissions.
+
+        '403':
+          description: Authentication error.
+
+    post:
+      description: Create a new wallet for the user
+      summary: Create a new wallet
+      tags:
+        - wallet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Wallet"
+      
+      responses:
+        "201":
+          description: Wallet successfully created.
+
+        '401':
+          description: Unauthorized. Need aditional permissions.
+
+        '403':
+          description: Authentication error.
+
+    delete:
+      description: Delete all user wallets
+      summary: Delete all user wallets
+      tags:
+        - wallet
+      
+      responses:
+        '204':
+          description: Wallets successfully deleted
+        
+        '401':
+          description: Unauthorized. Need aditional permissions.
+
+        '403':
+          description: Authentication error.
+              
+components:
+
+  schemas: 
+
+    Wallet:
+      type: object
+      required:
+        - name
+        - balance
+        - percent
+        - cap
+      properties:
+        name:
+          type: string
+          description: Name of the wallet
+          example: Travels
+        balance:
+          type: integer
+          description: Amount of money the wallet currently holds
+          example: 3000
+        percent:
+          type: integer
+          description: How much money from a deposit will go into this wallet
+          minimum: 0
+          maximum: 100
+          example: 15
+        cap:
+          type: integer
+          description: The maximum amount of money this wallet is allowed to hold
+          minimum: 0
+          example: 50000
