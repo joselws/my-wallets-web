@@ -154,10 +154,99 @@ paths:
         '403':
           description: Authentication error.
               
+  /wallet/{id}:
+    get:
+      description: Retrieve a specific wallet data
+      summary: Retrieve wallet data
+      tags:
+        - wallet/{id}
+      parameters:
+        - $ref: '#/components/parameters/getById'
+      
+      responses:
+        '200':
+          description: Wallet successfully retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Wallet"
+
+        '401':
+          description: Unauthorized. Need aditional permissions.
+
+        '403':
+          description: Authentication error.
+
+        '404':
+          description: Wallet not found.
+
+    put:
+      description: Add or deduct money to or from a wallet
+      summary: Update wallet balance
+      tags:
+        - wallet/{id}
+      parameters:
+        - $ref: '#/components/parameters/getById'
+
+      responses:
+        '200':
+          description: Wallet balance successfully updated
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - amount
+                properties:
+                  amount:
+                    type: integer
+                    example: -500
+
+        '400':
+          description: There was a problem with the request
+
+        '401':
+          description: Unauthorized. Need aditional permissions.
+
+        '403':
+          description: Authentication error.
+
+        '404':
+          description: Wallet not found.
+
+    delete:
+      description: Attempts to delete a wallet
+      summary: Delete a wallet
+      tags:
+        - wallet/{id}
+      parameters:
+        - $ref: '#/components/parameters/getById'
+
+      responses:
+        '204':
+          description: Wallet successfully deleted
+
+        '401':
+          description: Unauthorized. Need aditional permissions.
+
+        '403':
+          description: Authentication error.
+
+        '404':
+          description: Wallet not found.
+
 components:
 
-  schemas: 
+  parameters:
+    getById:
+      name: id
+      in: path
+      description: id of the model
+      required: true
+      schema:
+        type: string
 
+  schemas: 
     Wallet:
       type: object
       required:
