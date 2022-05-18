@@ -1,8 +1,0 @@
-deposit -> /deposit
-create new wallet -> /wallet post
-delete all wallets -> /wallet delete
-retrieve information about the wallets -> /wallet get
-add money to a specific wallet -> /wallet/{id} post
-retrieve information about a specific wallet -> /wallet/{id} get
-edit the cap and percentage wallet data -> /wallet/{id} put
-substract money from a specific wallet -> /wallet/{id} put

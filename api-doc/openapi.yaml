@@ -3,8 +3,6 @@ info:
   version: 0.1.0
   title: My Wallets API
   description: API used for the web app My Wallets
-  license:
-    name: MIT
 
 servers:
   - url: 'http://127.0.0.1:8000/api'
@@ -187,20 +185,16 @@ paths:
         - wallet/{id}
       parameters:
         - $ref: '#/components/parameters/getById'
+      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Amount'
 
       responses:
         '200':
           description: Wallet balance successfully updated
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - amount
-                properties:
-                  amount:
-                    type: integer
-                    example: -500
 
         '400':
           description: There was a problem with the request
@@ -225,6 +219,111 @@ paths:
       responses:
         '204':
           description: Wallet successfully deleted
+
+        '401':
+          description: Unauthorized. Need aditional permissions.
+
+        '403':
+          description: Authentication error.
+
+        '404':
+          description: Wallet not found.
+
+  /deposit:
+    put:
+      description: Adds money into account and distributes it to wallets
+      summary: Add money to wallets
+      tags:
+        - deposit
+      parameters:
+        - $ref: '#/components/parameters/getById'
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Amount'
+
+
+      responses:
+        '200':
+          description: Money successfully distributed into user wallets
+
+        '400':
+          description: There was a problem with user's request
+
+        '401':
+          description: Unauthorized. Need aditional permissions.
+
+        '403':
+          description: Authentication error.
+
+        '404':
+          description: Wallet not found.
+
+  /set:
+    put:
+      description: Change the percent or cap attribute of each user wallet
+      summary: Change percent or cap data of wallets
+      tags:
+        - set
+      parameters:
+        - $ref: '#/components/parameters/getById'
+      
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - id
+                - wallets
+              properties:
+                id:
+                  type: integer
+                  description: id of the user's account
+                  example: 25
+                wallets:
+                  oneOf:
+                    - type: array
+                      minItems: 1
+                      items:
+                        type: object
+                        required:
+                          - id
+                          - percent
+                        properties:
+                          id:
+                            type: string
+                            description: id of the wallet
+                            example: 35
+                          percent:
+                            type: integer
+                            description: percent attribute of the wallet
+                            example: 50
+                    - type: array
+                      minItems: 1
+                      items:
+                        type: object
+                        required:
+                          - id
+                          - cap
+                        properties:
+                          id:
+                            type: string
+                            description: id of the wallet
+                            example: 35
+                          cap:
+                            type: integer
+                            description: cap attribute of the wallet
+                            example: 100000
+
+      responses:
+        '200':
+          description: Wallets percent successfully set.
+
+        '400':
+          description: There was a problem with user's request
 
         '401':
           description: Unauthorized. Need aditional permissions.
@@ -274,3 +373,12 @@ components:
           description: The maximum amount of money this wallet is allowed to hold
           minimum: 0
           example: 50000
+
+    Amount:
+      type: object
+      required:
+        - amount
+      properties:
+        amount:
+          type: integer
+          example: 200
