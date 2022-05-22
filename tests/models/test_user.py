@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.db import IntegrityError
 from models import User
 
 class UserTestCase(TestCase):
@@ -6,7 +7,7 @@ class UserTestCase(TestCase):
 
     def setUp(self):
         """User models used in each test"""
-        self.test_user = User.objects.create_user (
+        self.test_user = User.objects.create_user(
                             username='test', 
                             password='pass123', 
                             email='test@user.com'
@@ -14,7 +15,7 @@ class UserTestCase(TestCase):
         
     def test_user_correctly_created(self):
         """Test the user in setUp was correctly created"""
-        self.assertQuerysetEqual(User.objects.all().count(), 1)
+        self.assertEqual(User.objects.all().count(), 1)
         self.assertEqual(self.test_user.username, 'test')
         self.assertEqual(self.test_user.email, 'test@user.com')
 
