@@ -49,7 +49,8 @@ class WalletTestCase(TransactionTestCase):
 
     def test_no_percent_above_100(self):
         """Percent max value is 100"""
-        Wallet.objects.create(user=self.test_user, name='test', percent=150)
+        with self.assertRaises(ValidationError):
+            Wallet(user=self.test_user, name='test', percent=150).full_clean()
         self.assertEqual(Wallet.objects.count(), 0)
 
     def test_no_negative_percent(self):
