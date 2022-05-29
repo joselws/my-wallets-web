@@ -58,3 +58,47 @@ class WalletTestCase(TransactionTestCase):
         with self.assertRaises(IntegrityError):
             Wallet.objects.create(user=self.test_user, name='test', cap=-50)
         self.assertEqual(Wallet.objects.count(), 0)
+
+    def test_cap_greater_than_balance(self):
+        """If cap is greater than balance, then it's OK"""
+        wallet = Wallet(
+                        user=self.test_user, 
+                        name='test',
+                        balance=1000,
+                        percent=30,
+                        cap=5000
+                        )
+        wallet.full_clean()
+        wallet.save()
+        self.assertEqual(Wallet.objects.count(), 1)
+
+    def test_balance_greater_than_cap(self):
+        """Balance can't be greater than cap"""
+        wallet = Wallet(
+                        user=self.test_user, 
+                        name='test',
+                        balance=5000,
+                        percent=30,
+                        cap=-1000
+                        )
+        try:
+            wallet.full_clean()
+            wallet.save()
+        except ValidationError:
+            pass
+        self.assertEqual(Wallet.objects.count(), 0)
+
+    def test_balance_greater_than_cap_and_is_0(self):
+        """Balance can be greater than cap if cap is 0"""
+        wallet = Wallet(
+                        user=self.test_user, 
+                        name='test',
+                        balance=1000,
+                        percent=30,
+                        )
+        try:
+            wallet.full_clean()
+            wallet.save()
+        except ValidationError:
+            pass
+        self.assertEqual(Wallet.objects.count(), 1)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from api.validators import validate_100_max
+from django.core.exceptions import ValidationError
 
 
 class User(AbstractUser):
@@ -19,10 +20,10 @@ class Wallet(models.Model):
     percent = models.PositiveSmallIntegerField(default=0, validators=[validate_100_max])
     cap = models.PositiveIntegerField(default=0)
 
-    def clean_percent(self):
-        """Only accept max values of 100"""
-        if self.percent > 100:
-            return ValidationError('Max number is 100')
+    def clean(self):
+        """Balance can't be greater than cap unless cap is 0"""
+        if self.cap and self.balance > self.cap:
+            raise ValidationError("Balance can't be greater than cap!")
 
     def __str__(self):
         return f'Wallet: {self.name} (${self.balance})'
